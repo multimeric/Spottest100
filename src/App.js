@@ -100,7 +100,7 @@ function App() {
     client.settings = {
         clientId: '9c91bacd3cc149c4ac198f88b2468719',
         scopes: ['user-top-read'],
-        redirect_uri: 'http://localhost:8888',
+        redirect_uri: window.location.origin + window.location.pathname,
     };
 
     let content;
