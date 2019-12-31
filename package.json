@@ -11,6 +11,7 @@
     "react-scripts": "3.3.0"
   },
   "scripts": {
+    "deploy": "gh-pages -d dist",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -33,6 +34,8 @@
   },
   "devDependencies": {
     "@material-ui/core": "^4.8.1",
+    "gh-pages": "^2.1.1",
+    "lodash.uniqby": "^4.7.0",
     "qs": "^6.9.1",
     "react-router-dom": "^5.1.2",
     "spotify-sdk": "^1.0.0-beta2"
