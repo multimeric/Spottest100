@@ -1,16 +1,19 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import './App.css';
-import { Client, UserHandler } from 'spotify-sdk';
-import { useLocation } from 'react-router-dom';
+import {Client, UserHandler} from 'spotify-sdk';
+import {useLocation} from 'react-router-dom';
 import qs from 'qs';
 import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
+import TablePagination from '@material-ui/core/TablePagination';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableFooter from '@material-ui/core/TableFooter';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -20,14 +23,18 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import uniqBy from 'lodash.uniqby';
+
+const homeUrl = window.location.origin + window.location.pathname;
 
 // Set Spotify API settings
 let client = Client.instance;
 client.settings = {
     clientId: '9c91bacd3cc149c4ac198f88b2468719',
     scopes: ['user-top-read'],
-    redirect_uri: window.location.origin + window.location.pathname,
+    redirect_uri: homeUrl
 };
 
 /**
@@ -56,7 +63,8 @@ function upcomingYear(date) {
     if (date < votingCloses) {
         // If we're before the Hottest 100 date, the current year is the upcoming year
         return date.getFullYear() - 1;
-    } else {
+    }
+    else {
         // If we're after the Hottest 100 date, next year is the upcoming year
         return date.getFullYear();
     }
@@ -84,6 +92,9 @@ function App() {
     const [shortTerm, setShortTerm] = useState([]);
     const [mediumTerm, setMediumTerm] = useState([]);
     const [longTerm, setLongTerm] = useState([]);
+    const [tablePage, setTablePage] = useState(0);
+    const [currentTab, setCurrentTab] = useState(0);
+
     const currentYear = upcomingYear(new Date());
     const [year, setYear] = useState(currentYear);
 
@@ -119,104 +130,179 @@ function App() {
 
     // Filter the tracks to the top 10, choosing longer term favourites where possible
     const tracks = useMemo(() => {
-        let ret = uniqBy(
-            longTerm
-                .concat(mediumTerm, shortTerm)
-                .filter(track => isEligible(track, year)),
-            'id',
-        );
+        let ret;
+        switch (currentTab) {
+            case 0:
+                // Combined
+                ret = uniqBy(
+                    longTerm
+                        .concat(mediumTerm, shortTerm)
+                        .filter(track => isEligible(track, year)),
+                    'id',
+                );
+                break;
+            case 1:
+                ret = longTerm.filter(track => isEligible(track, year));
+                break;
+            case 2:
+                ret = mediumTerm.filter(track => isEligible(track, year));
+                break;
+            case 3:
+                ret = shortTerm.filter(track => isEligible(track, year));
+                break;
+        }
 
         if (uniqueArtists) {
             // If unique by artist, filter by the first artist who tends to be the main one
             return uniqBy(ret, track => {
                 return track.artists[0].name;
             });
-        } else {
+        }
+        else {
             return ret;
         }
 
-    }, [shortTerm, mediumTerm, longTerm, year, uniqueArtists]);
+    }, [shortTerm, mediumTerm, longTerm, year, uniqueArtists, currentTab]);
 
     let content;
     if (retrievalState === 'retrieved') {
-        content = <Paper>
-            <Grid container justify={'center'}>
-                <Grid item>
-                    <FormGroup row>
-                        <TextField
-                            label="Year"
-                            type="number"
-                            value={year}
-                            onChange={e => {
-                                setYear(e.target.value);
-                            }}
-                        />
-                        <FormControlLabel control={
-                            <Checkbox
-                                checked={uniqueArtists}
+        content = <>
+            <Box my={'20px'}>
+                <Grid container justify={'center'}>
+                    <Grid item md={6}>
+                        <Button
+                            fullWidth
+                            variant={'contained'}
+                            size={'large'}
+                            color={'primary'}
+                            href={homeUrl}
+                        >
+                            Logout
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Paper>
+                <Grid container justify={'center'}>
+                    <Grid item>
+                        <FormGroup row>
+                            <TextField
+                                label="Year"
+                                type="number"
+                                value={year}
                                 onChange={e => {
-                                    setUniqueArtists(e.target.checked);
+                                    setYear(e.target.value);
                                 }}
                             />
-                        }
-                            label={'Unique Artists'}
-                        />
-                    </FormGroup>
+                            <FormControlLabel control={
+                                <Checkbox
+                                    checked={uniqueArtists}
+                                    onChange={e => {
+                                        setUniqueArtists(e.target.checked);
+                                    }}
+                                />
+                            }
+                                              label={'Unique Artists'}
+                            />
+                        </FormGroup>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <TableContainer component={Paper}>
-                <Table style={{
-                    width: '100%',
-                }}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Rank</TableCell>
-                            <TableCell>Song</TableCell>
-                            <TableCell>Artists</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            tracks
-                                .map((track, i) => {
-                                    return (
-                                        <TableRow>
-                                            <TableCell>{i + 1}</TableCell>
-                                            <TableCell>
-                                                <Link href={track.uri}>
-                                                    {track.name}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>{
-                                                track.artists.map(artist => artist.name).join(', ')
-                                            }
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>;
-    } else if (!('access_token' in hash)) {
-        content = <Button
-            variant={'contained'}
-            size={'large'}
-            color={'primary'}
-            href={loginUrl}
-        >
-            Login
-        </Button>;
-    } else {
+                <Tabs
+                    variant={'fullWidth'}
+                    value={currentTab}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    onChange={(e, value) => {
+                        setCurrentTab(value);
+                    }}
+                >
+                    <Tab label="Combined"/>
+                    <Tab label="Long Term"/>
+                    <Tab label="Medium Term"/>
+                    <Tab label="Short Term"/>
+                </Tabs>
+                <TableContainer component={Paper}>
+                    <Table style={{tableLayout: 'fixed'}}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={{width: '10%'}}>Rank</TableCell>
+                                <TableCell style={{width: '45%'}}>Song</TableCell>
+                                <TableCell style={{width: '45%'}}>Artists</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                tracks
+                                    .slice(tablePage * 10, tablePage * 10 + 10)
+                                    .map((track, i) => {
+                                        return (
+                                            <TableRow>
+                                                <TableCell>{i + 1}</TableCell>
+                                                <TableCell>
+                                                    <Link href={track.uri}>
+                                                        {track.name}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell>{
+                                                    track.artists.map(artist => artist.name).join(', ')
+                                                }
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                            }
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    page={tablePage}
+                                    count={tracks.length}
+                                    onChangePage={(e, newPage) => {
+                                        setTablePage(newPage);
+                                    }}
+                                    rowsPerPage={10}
+                                    rowsPerPageOptions={[10]}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>
+            </Paper>
+        </>;
+    }
+    else if (!('access_token' in hash)) {
+        content = (
+            <Box mt={'20px'}>
+                <Grid container justify={'center'}>
+                    <Grid item md={6}>
+                        <Button
+                            fullWidth
+                            variant={'contained'}
+                            size={'large'}
+                            color={'primary'}
+                            href={loginUrl}
+                        >
+                            Login with Spotify
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Box>
+        );
+    }
+    else {
         content = (<CircularProgress/>);
     }
 
     return <Container maxWidth={'md'}>
         <Grid container justify={'center'}>
-            <Grid item>
+            <Grid item style={{
+                textAlign: 'center'
+            }}>
                 <Typography variant={'h2'}>
-                    Spotify Hottest 100 Calculator
+                    Spottest 100
+                </Typography>
+                <Typography variant={'subtitle1'}>
+                    A calculator for your Triple J Hottest 100 votes, using your music library
                 </Typography>
                 {content}
             </Grid>
