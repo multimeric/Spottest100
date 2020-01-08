@@ -1,7 +1,7 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './App.css';
-import {Client, UserHandler} from 'spotify-sdk';
-import {useLocation} from 'react-router-dom';
+import { Client, UserHandler } from 'spotify-sdk';
+import { useLocation } from 'react-router-dom';
 import qs from 'qs';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
@@ -34,7 +34,7 @@ let client = Client.instance;
 client.settings = {
     clientId: '9c91bacd3cc149c4ac198f88b2468719',
     scopes: ['user-top-read'],
-    redirect_uri: homeUrl
+    redirect_uri: homeUrl,
 };
 
 /**
@@ -63,8 +63,7 @@ function upcomingYear(date) {
     if (date < votingCloses) {
         // If we're before the Hottest 100 date, the current year is the upcoming year
         return date.getFullYear() - 1;
-    }
-    else {
+    } else {
         // If we're after the Hottest 100 date, next year is the upcoming year
         return date.getFullYear();
     }
@@ -157,8 +156,7 @@ function App() {
             return uniqBy(ret, track => {
                 return track.artists[0].name;
             });
-        }
-        else {
+        } else {
             return ret;
         }
 
@@ -202,7 +200,7 @@ function App() {
                                     }}
                                 />
                             }
-                                              label={'Unique Artists'}
+                                label={'Unique Artists'}
                             />
                         </FormGroup>
                     </Grid>
@@ -222,12 +220,12 @@ function App() {
                     <Tab label="Short Term"/>
                 </Tabs>
                 <TableContainer component={Paper}>
-                    <Table style={{tableLayout: 'fixed'}}>
+                    <Table style={{ tableLayout: 'fixed' }}>
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{width: '10%'}}>Rank</TableCell>
-                                <TableCell style={{width: '45%'}}>Song</TableCell>
-                                <TableCell style={{width: '45%'}}>Artists</TableCell>
+                                <TableCell style={{ width: '10%' }}>Rank</TableCell>
+                                <TableCell style={{ width: '45%' }}>Song</TableCell>
+                                <TableCell style={{ width: '45%' }}>Artists</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -237,14 +235,27 @@ function App() {
                                     .map((track, i) => {
                                         return (
                                             <TableRow>
-                                                <TableCell>{i + 1}</TableCell>
+                                                <TableCell>{tablePage * 10 + i + 1}</TableCell>
                                                 <TableCell>
-                                                    <Link href={track.uri}>
+                                                    <Link href={track.external_urls.spotify}
+                                                        target="_blank">
                                                         {track.name}
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>{
-                                                    track.artists.map(artist => artist.name).join(', ')
+                                                    track.artists.map((artist, i, arr) => {
+                                                        const children = [
+                                                            <Link
+                                                                href={artist.external_urls.spotify}
+                                                                target="_blank">
+                                                                {artist.name}
+                                                            </Link>
+                                                        ];
+                                                        if (i < arr.length - 1) {
+                                                            children.push(<span>, </span>);
+                                                        }
+                                                        return <>{children}</>;
+                                                    })
                                                 }
                                                 </TableCell>
                                             </TableRow>
@@ -269,8 +280,7 @@ function App() {
                 </TableContainer>
             </Paper>
         </>;
-    }
-    else if (!('access_token' in hash)) {
+    } else if (!('access_token' in hash)) {
         content = (
             <Box mt={'20px'}>
                 <Grid container justify={'center'}>
@@ -288,15 +298,14 @@ function App() {
                 </Grid>
             </Box>
         );
-    }
-    else {
+    } else {
         content = (<CircularProgress/>);
     }
 
     return <Container maxWidth={'md'}>
         <Grid container justify={'center'}>
             <Grid item style={{
-                textAlign: 'center'
+                textAlign: 'center',
             }}>
                 <Typography variant={'h2'}>
                     Spottest 100
