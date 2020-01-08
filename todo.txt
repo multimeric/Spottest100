@@ -1,5 +1,7 @@
-Multiple tabs
-Separate into components
-Fix mobile
-Test other users
+[x] Multiple tabs
+[ ] Separate into components
+[x] Fix mobile
+[ ] Test other users
+[ ] Add "about this" modal
+[ ] Github badge
 
