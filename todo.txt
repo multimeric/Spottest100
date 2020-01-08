@@ -4,4 +4,6 @@
 [ ] Test other users
 [ ] Add "about this" modal
 [ ] Github badge
+[ ] Rename repo
+[ ] GitHub readme
 
