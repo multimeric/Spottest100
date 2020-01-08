@@ -6,4 +6,5 @@
 [ ] Github badge
 [ ] Rename repo
 [ ] GitHub readme
-
+[ ] Artist links
+[ ] Fix the rank on pages 2+
