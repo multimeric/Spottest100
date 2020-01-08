@@ -8,3 +8,4 @@
 [ ] GitHub readme
 [x] Artist links
 [x] Fix the rank on pages 2+
+[x] Reset pagination when tabbing

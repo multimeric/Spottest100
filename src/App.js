@@ -212,6 +212,7 @@ function App() {
                     textColor="primary"
                     onChange={(e, value) => {
                         setCurrentTab(value);
+                        setTablePage(0);
                     }}
                 >
                     <Tab label="Combined"/>
