@@ -11,3 +11,4 @@
 [x] Reset pagination when tabbing
 [ ] Fix gap between year and checkbox
 [ ] Add message if you have an empty table
+[ ] Fix login rejection
