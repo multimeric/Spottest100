@@ -26,7 +26,7 @@ export default function Menu() {
                         setAboutOpen(true);
                     }}>About</Button>
                     <Button size={'large'} color={'inherit'} target="_blank" href={"https://github.com/TMiguelT/Spottest100"}>Source Code</Button>
-                    
+                    <Button size={'large'} color={'inherit'} target="_blank" href={"https://github.com/TMiguelT/Spottest100/issues"}>Report an Issue</Button>
                 </Toolbar>
             </AppBar>
         </>

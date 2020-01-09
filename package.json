@@ -3,20 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://tmiguelt.github.io/Spottest100",
-  "dependencies": {
-    "@material-ui/lab": "^4.0.0-alpha.39",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.2.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0"
-  },
   "scripts": {
     "deploy": "npm run build && gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "mocha --require @babel/register",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -35,11 +26,21 @@
     ]
   },
   "devDependencies": {
+    "@babel/polyfill": "^7.7.0",
+    "@babel/preset-env": "^7.7.7",
     "@material-ui/core": "^4.8.3",
+    "@material-ui/lab": "^4.0.0-alpha.39",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^7.2.1",
     "gh-pages": "^2.1.1",
     "lodash.uniqby": "^4.7.0",
+    "mocha": "^7.0.0",
     "qs": "^6.9.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
+    "react-scripts": "3.3.0",
     "spotify-sdk": "^1.0.0-beta2"
   }
 }
