@@ -2,13 +2,14 @@
 [x] Separate into components
 [x] Fix mobile
 [x] Test other users
-[ ] Add "about this" modal
-[ ] Github badge
+[x] Add "about this" modal
+[x] Github badge
 [x] Rename repo
 [ ] GitHub readme
 [x] Artist links
 [x] Fix the rank on pages 2+
 [x] Reset pagination when tabbing
-[ ] Fix gap between year and checkbox
-[ ] Add message if you have an empty table
-[ ] Fix login rejection
+[x] Fix gap between year and checkbox
+[x] Add message if you have an empty table
+[x] Fix login rejection
+[x] Form tooltips 

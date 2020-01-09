@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import './App.css';
-import { Client, UserHandler } from 'spotify-sdk';
-import { useLocation } from 'react-router-dom';
+import React, {useEffect, useMemo, useState} from 'react';
+import './app.css';
+import {Client, UserHandler} from 'spotify-sdk';
+import {useLocation} from 'react-router-dom';
 import qs from 'qs';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import Frame from './Frame';
-import Login from './Login';
-import TrackList from './TrackList';
+import Frame from './frame';
+import Login from './login';
+import TrackList from './trackList';
 
 const homeUrl = window.location.origin + window.location.pathname;
 
@@ -58,6 +58,9 @@ function App() {
                 setShortTerm(shortTerm);
                 setMediumTerm(mediumTerm);
                 setLongTerm(longTerm);
+            }).catch(err => {
+                // If the request failed, the access token is wrong or out of date, so make the user login again
+                window.location.replace(homeUrl);
             });
         }
     }, [retrievalState, hash, hash.access_token]);
