@@ -1,11 +1,13 @@
 [x] Multiple tabs
-[ ] Separate into components
+[x] Separate into components
 [x] Fix mobile
-[ ] Test other users
+[x] Test other users
 [ ] Add "about this" modal
 [ ] Github badge
-[ ] Rename repo
+[x] Rename repo
 [ ] GitHub readme
 [x] Artist links
 [x] Fix the rank on pages 2+
 [x] Reset pagination when tabbing
+[ ] Fix gap between year and checkbox
+[ ] Add message if you have an empty table
