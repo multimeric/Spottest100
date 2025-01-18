@@ -8,18 +8,24 @@ export enum Source {
 }
 
 /**
- * A stripped-down version of Spotify's Track object, removing superfluous fields
+ * A stripped-down version of Spotify's Track object to reduce the memory footprint
  */
 export interface SimpleTrack {
+    id: string;
     name: string;
     artists: string[];
-    source: Source
+    sources: Source[];
+    releaseDate: Date;
+    spotifyUrl: string;
 }
 
 export function convertTrack(track: Track, source: Source): SimpleTrack {
     return {
+        id: track.id,
         name: track.name,
         artists: track.artists.map(artist => artist.name),
-        source: source
+        sources: [source],
+        releaseDate: new Date(track.album.release_date),
+        spotifyUrl: track.external_urls.spotify,
     };
 }

@@ -7,11 +7,12 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { TrackGrid } from './trackGrid';
 import { Box, Paper } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import { TrackRegistry } from './trackLookup';
 
 
 export default function App(props: { year: number }) {
   const location = window.location;
-  const [tracks, setTracks] = useState<SimpleTrack[]>([]);
+  const [tracks, setTracks] = useState<TrackRegistry>(new TrackRegistry());
   // const [shortTerm, setShortTerm] = useState<SimpleTrack[] | null>(null);
   // const [mediumTerm, setMediumTerm] = useState<SimpleTrack[] | null>(null);
   // const [longTerm, setLongTerm] = useState<SimpleTrack[] | null>(null);
@@ -27,14 +28,14 @@ export default function App(props: { year: number }) {
   ), []);
 
   async function loadTracks() {
-    for await (let newTracks of getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "short_term", pageSize, offset), props.year, Source.ShortTerm)) {
-      setTracks(tracks => [...newTracks, ...tracks])
-    };
-    for await (let newTracks of getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "medium_term", pageSize, offset), props.year, Source.MediumTerm)) {
-      setTracks(tracks => [...newTracks, ...tracks])
-    };
+    // for await (let newTracks of getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "short_term", pageSize, offset), props.year, Source.ShortTerm)) {
+    //   setTracks(tracks => tracks.processTrackSet(newTracks));
+    // };
+    // for await (let newTracks of getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "medium_term", pageSize, offset), props.year, Source.MediumTerm)) {
+    //   setTracks(tracks => tracks.processTrackSet(newTracks));
+    // };
     for await (let newTracks of getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "long_term", pageSize, offset), props.year, Source.LongTerm)) {
-      setTracks(tracks => [...newTracks, ...tracks])
+      setTracks(tracks => tracks.processTrackSet(newTracks));
     };
   }
 
@@ -42,7 +43,7 @@ export default function App(props: { year: number }) {
 
   let content = null;
   if (tracks.length > 0) {
-    content = <TrackGrid tracks={tracks} />;
+    content = <TrackGrid tracks={tracks.toArray()} />;
   }
   else {
     content = <CircularProgress />;
