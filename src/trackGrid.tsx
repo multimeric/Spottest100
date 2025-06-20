@@ -16,6 +16,11 @@ const columns: GridColDef<SimpleTrack>[] = [
         renderCell: x => <a href={x.row.spotifyUrl}>{x.row.name}</a>
     },
     {
+        field: 'album',
+        headerName: 'Album',
+        width: 200
+    },
+    {
         field: 'artists',
         headerName: 'Artists',
         width: 200,
@@ -39,7 +44,7 @@ export function TrackGrid(props: { tracks: SimpleTrack[] }) {
     return <DataGrid
         rows={props.tracks}
         columns={columns}
-        getRowId={track => track.name}
+        getRowId={track => track.id}
         disableRowSelectionOnClick
         initialState={{
             pagination: {

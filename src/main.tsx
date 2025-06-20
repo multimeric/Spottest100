@@ -4,7 +4,5 @@ import './index.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App year={2024} />
-  </StrictMode>,
+  <App year={null} votingListName='Australian Songs (2025)' />
 )

@@ -13,6 +13,7 @@ export enum Source {
 export interface SimpleTrack {
     id: string;
     name: string;
+    album: string;
     artists: string[];
     sources: Source[];
     releaseDate: Date;
@@ -23,6 +24,7 @@ export function convertTrack(track: Track, source: Source): SimpleTrack {
     return {
         id: track.id,
         name: track.name,
+        album: track.album.name,
         artists: track.artists.map(artist => artist.name),
         sources: [source],
         releaseDate: new Date(track.album.release_date),

@@ -1,5 +1,6 @@
 import { MaxInt, Page, Track } from "@spotify/web-api-ts-sdk";
 import {convertTrack, SimpleTrack, Source} from "./simpleTrack";
+import pLimit from "p-limit";
 
 /**
  * Gets the start (inclusive) and end (exclusive) dates for eligible songs in that year. e.g. for 2019 this would be
@@ -43,23 +44,27 @@ export function isEligible(track: Track, year: number) : boolean {
     return date >= start && date < end;
 }
 
-export function processPage(tracks: Track[], year: number, source: Source) : SimpleTrack[] {
-    return tracks.filter(track => isEligible(track, year)).map(track => convertTrack(track, source));
+export function processPage(tracks: Track[], source: Source) : SimpleTrack[] {
+    return tracks.map(track => convertTrack(track, source));
 }
 
+
 /**
- * Repeatedly calls a pager function until all pages have been retrieved
+ * When awaited, will return an array of promises, each of which resolves to a page of tracks.
+ * All such promises will be resolved in parallel.
  * @param pager Function to retrieve a page of items
+ * @param concurrencyLimit Maximum number of concurrent requests to the pager function
  * @param pageSize Number of items per page
- * @returns All items from all pages
  */
-export async function* getAllPages(pager: ((offset: number, pageSize: MaxInt<50>) => Promise<Page<Track>>), year: number, source: Source , pageSize: MaxInt<50> = 50) : AsyncGenerator<SimpleTrack[], void, void> {
-    let currentPage = 0;
-    let limit = 100;
-    while (currentPage < limit) {
-        const page = await pager(currentPage, pageSize);
-        limit = page.total;
-        yield processPage(page.items, year, source);
-        currentPage += pageSize;
+export async function getAllPages(pager: ((offset: number, pageSize: MaxInt<50>) => Promise<Page<Track>>), source: Source, pageSize: MaxInt<50> = 50, concurrencyLimit: number = 5) : Promise<Promise<SimpleTrack[]>[]>{
+    const concurrencyLimiter = pLimit(concurrencyLimit);
+
+    // Wait for the first page, since we need to know the total number of items
+    const firstPage = await pager(0, pageSize);
+    const promises: Promise<SimpleTrack[]>[] = [Promise.resolve(processPage(firstPage.items, source))];
+
+    for (let i = pageSize; i < firstPage.total; i += pageSize) {
+        promises.push(concurrencyLimiter(() => pager(i, pageSize).then(page => processPage(page.items, source))));
     }
+    return promises;
 }
