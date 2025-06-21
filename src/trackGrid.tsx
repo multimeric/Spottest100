@@ -29,7 +29,7 @@ const columns: GridColDef<SimpleTrack>[] = [
     // },
     {
         field: 'name',
-        headerName: 'Name',
+        headerName: 'Track',
         flex: 1,
         // width: 200,
         renderCell: x => <Link href={x.row.spotifyUrl}><Grid2 sx={{
@@ -75,13 +75,13 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
         getRowId={track => track.id}
         disableRowSelectionOnClick
         disableColumnSorting={true}
-        initialState={{
-            pagination: {
-                paginationModel: {
-                    pageSize: 10
-                }
-            }
-        }}
+        // initialState={{
+        //     pagination: {
+        //         paginationModel: {
+        //             pageSize: 10
+        //         }
+        //     }
+        // }}
     />
 }
 
