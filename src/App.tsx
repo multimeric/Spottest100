@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { getAllPages } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
-import { AppBar, Box, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { AppBar, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import { Australian2025Countdown } from './countdowns/2025Australian';
 import { Countdown2024 } from './countdowns/2024';
 import { useThrottle } from "@uidotdev/usehooks";
+import About from './about';
 
 
 type Countdown = {
@@ -31,9 +32,12 @@ export default function App() {
 
   // All favourite tracks
   const [tracks, setTracks] = useState<SimpleTrack[]>([]);
+  // Throttle the tracks to avoid re-rendering too often
   const cachedTracks = useThrottle(tracks, 500);
   const [countdownId, setCountdownId] = useState<CountDownId>("2025-Australian");
   const homeUrl = location.origin + location.pathname;
+
+  const [showAbout, setShowAbout] = useState(false);
 
   const CountdownComponent = countdowns[countdownId].component;
   const client = useMemo(() => SpotifyApi.withUserAuthorization(
@@ -60,29 +64,33 @@ export default function App() {
       display: 'flex',
       flexDirection: 'column',
     }}>
+      <About open={showAbout} handleClose={() => setShowAbout(false)} />
       <AppBar position="static">
-        <Typography variant="button" align="center">spottest 100</Typography>
+        <Toolbar>
+          <Typography flexGrow={1} variant="button">spottest 100</Typography>
+          <Button onClick={() => { setShowAbout(true) }} color='inherit'>Help</Button>
+        </Toolbar>
       </AppBar>
       <Paper sx={{ maxWidth: 1000, margin: 'auto', padding: 2 }}>
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Countdown</InputLabel>
-            <Select
-              value={countdownId}
-              label="Time Range"
-              variant='filled'
-              onChange={(e) => {
-                setCountdownId(e.target.value as CountDownId);
-              }}
-            >
-              {Object.entries(countdowns).map(([id, countdown]) => (
-                <MenuItem key={id} value={id}>
-                  {countdown.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <CountdownComponent favourites={cachedTracks} />
-        </Paper>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Countdown</InputLabel>
+          <Select
+            value={countdownId}
+            label="Time Range"
+            variant="filled"
+            onChange={(e) => {
+              setCountdownId(e.target.value as CountDownId);
+            }}
+          >
+            {Object.entries(countdowns).map(([id, countdown]) => (
+              <MenuItem key={id} value={id}>
+                {countdown.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <CountdownComponent favourites={cachedTracks} />
+      </Paper>
     </Box>
   );
 }
