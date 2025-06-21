@@ -5,7 +5,7 @@ import { getAllPages, processPage } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { TrackGrid } from './trackGrid';
-import { Box, Container, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
+import { Box, Container, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
 import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 import pLimit from 'p-limit';
 import { Australian2025Countdown, use2025Countdown } from './2025Australian';
@@ -62,6 +62,7 @@ export default function App(props: { year: number | null, votingListName: Voting
     <Box sx={{
       width: '100%',
     }}>
+      <Typography variant="h3" align="center">Spottest 100</Typography>
       <Box sx={{ maxWidth: 1000, margin: 'auto' }}>
         <Paper>
           <FormControl fullWidth sx={{ mb: 2 }}>

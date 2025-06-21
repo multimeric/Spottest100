@@ -19,6 +19,7 @@ export interface SimpleTrack {
     sources: Source[];
     releaseDate: Date;
     spotifyUrl: string;
+    thumbnail: string | null;
 }
 
 export function convertTrack(track: Track, source: Source, rank: number): SimpleTrack {
@@ -31,5 +32,13 @@ export function convertTrack(track: Track, source: Source, rank: number): Simple
         sources: [source],
         releaseDate: new Date(track.album.release_date),
         spotifyUrl: track.external_urls.spotify,
+        thumbnail: track.album.images.length > 0 ? track.album.images[0].url : null
     };
+}
+
+export function rerankTracks(tracks: SimpleTrack[]): SimpleTrack[] {
+    return tracks.map((track, index) => ({
+        ...track,
+        rank: index + 1 // Ranks start at 1
+    }));
 }

@@ -1,8 +1,8 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAllPages, processPage } from './utils'
-import { SimpleTrack, Source } from './simpleTrack';
+import { rerankTracks, SimpleTrack, Source } from './simpleTrack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Box, Paper } from '@mui/material';
+import { Avatar, Box, Grid, Grid2, Link, Paper } from '@mui/material';
 import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 
 const formatSource: Record<Source, string> = {
@@ -14,10 +14,34 @@ const formatSource: Record<Source, string> = {
 
 const columns: GridColDef<SimpleTrack>[] = [
     {
+        field:"rank",
+        headerName: 'Rank',
+        width: 50
+    },
+    // {
+    //     field: 'thumbnail',
+    //     headerName: '',
+    //     width: 60,
+    //     renderCell: (params) => {
+    //         if (!params.row.thumbnail) return null;
+    //         return <Avatar src={params.row.thumbnail} alt={params.row.name} style={{ width: '52px', height: '52px' }} />;
+    //     }
+    // },
+    {
         field: 'name',
         headerName: 'Name',
-        width: 200,
-        renderCell: x => <a href={x.row.spotifyUrl}>{x.row.name}</a>
+        flex: 1,
+        // width: 200,
+        renderCell: x => <Link href={x.row.spotifyUrl}><Grid2 sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            // Space between the avatar and the text
+            alignItems: 'center',
+            gap: '8px',
+        }} >
+            <Avatar src={x.row.thumbnail || undefined} alt={x.row.name} style={{ width: '52px', height: '52px' }} />
+            {x.row.name}
+            </Grid2></Link>
     },
     {
         field: 'album',
@@ -36,12 +60,12 @@ const columns: GridColDef<SimpleTrack>[] = [
         width: 200,
         valueGetter: (value: Date) => value.toLocaleDateString()
     },
-    {
-        field: 'sources',
-        headerName: 'Source',
-        width: 200,
-        valueGetter: (sources: Source[]) => sources.map(source => formatSource[source]).join(', ')
-    },
+    // {
+    //     field: 'sources',
+    //     headerName: 'Source',
+    //     width: 200,
+    //     valueGetter: (sources: Source[]) => sources.map(source => formatSource[source]).join(', ')
+    // },
 ]
 
 export function InnerGrid(props: { tracks: SimpleTrack[] }) {
@@ -50,6 +74,7 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
         columns={columns}
         getRowId={track => track.id}
         disableRowSelectionOnClick
+        disableColumnSorting={true}
         initialState={{
             pagination: {
                 paginationModel: {
@@ -69,7 +94,7 @@ export function TrackGrid({ tracks, seen }: {
 }) {
     let content = null;
     if (tracks.length > 0) {
-        content = <InnerGrid tracks={tracks} />;
+        content = <InnerGrid tracks={rerankTracks(tracks)} />;
     }
     else {
         content = (
