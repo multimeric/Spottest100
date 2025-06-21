@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 
-export interface Track {
+export interface VotingListTrack {
     title: string;
     artist_name: string;
     spotify_track_id: string;
-}
-
-export const VOTING_LISTS = {
-    "Australian Songs (2025)": "2025_australian.json"
-    // "2024": "2025_australian.json",
 }
 
 export function useVotingList(url: string) {
@@ -25,14 +20,11 @@ export function useVotingList(url: string) {
     return votingList;
 }
 
-
-export type VotingListName = keyof typeof VOTING_LISTS;
-
 export class VotingList {
-    tracks: Track[];
+    tracks: VotingListTrack[];
     spotifyIds: Set<string>;
 
-    constructor(tracks: Track[]) {
+    constructor(tracks: VotingListTrack[]) {
         this.tracks = tracks;
         this.spotifyIds = new Set(tracks.map(track => track.spotify_track_id));
     }

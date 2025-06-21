@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
 import { SimpleTrack } from "./simpleTrack";
-import { useVotingList, VotingList } from "./votingList";
-import { SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
+import { useVotingList } from "./votingList";
 import { TrackGrid } from "./trackGrid";
 import { byVotingList, byArtistMaxSongs } from "./filters"
-import { useForm, SubmitHandler, Controller, Control } from "react-hook-form"
-import { FormControl, Grid2, Input, InputLabel, MenuItem, Select } from "@mui/material"
-import { useDerivedState } from "./useDerived";
+import { useForm, Controller, Control } from "react-hook-form"
+import { FormControl, Grid2, InputLabel, MenuItem, Select } from "@mui/material"
 
 type Inputs = {
     limitPerArtist: number
@@ -49,10 +46,6 @@ export function Australian2025Countdown({ favourites }: {
     const limitPerArtist = watch("limitPerArtist");
 
     const votingList = useVotingList("2025_australian.json");
-    // const filtered = useDerivedState(favourites, (tracks) => {
-    //     if (!votingList) return tracks;
-    //     return byArtistMaxSongs(byVotingList(tracks, votingList), limitPerArtist);
-    // }, [])
     let filtered: SimpleTrack[];
     if (!votingList) {
         filtered = []
@@ -68,28 +61,3 @@ export function Australian2025Countdown({ favourites }: {
         </Grid2>
     )
 }
-
-
-// export function use2025Countdown(tracks: SimpleTrack[]): [JSX.Element, SimpleTrack[]] {
-//     const {
-//         watch,
-//         control,
-//         formState: { errors },
-//     } = useForm<Inputs>()
-//     const limitPerArtist = watch("limitPerArtist");
-
-//     const form = (
-//         <Controller
-//             name="limitPerArtist"
-//             control={control}
-//             render={({ field }) => <Input {...field} />}
-//         />
-//     )
-
-//     const filtered = useDerivedState(tracks, (tracks) => byArtistMaxSongs(tracks, limitPerArtist))
-
-//     return [
-//         form,
-//         filtered
-//     ]
-// }

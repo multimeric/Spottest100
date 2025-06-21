@@ -1,14 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
-import CircularProgress from '@mui/material/CircularProgress';
-import { getAllPages, processPage } from './utils'
+import { SpotifyApi } from '@spotify/web-api-ts-sdk';
+import { getAllPages } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { TrackGrid } from './trackGrid';
-import { AppBar, Box, Container, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
-import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
-import pLimit from 'p-limit';
-import { Australian2025Countdown, use2025Countdown } from './2025Australian';
+import { AppBar, Box, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { VotingListName } from './votingList';
+import { Australian2025Countdown } from './2025Australian';
 import { useThrottle } from "@uidotdev/usehooks";
 
 
@@ -31,7 +27,7 @@ const countdowns: Record<string, Countdown> = {
 
 type CountDownId = keyof typeof countdowns;
 
-export default function App(props: { year: number | null, votingListName: VotingListName }) {
+export default function App() {
   const location = window.location;
 
   // All favourite tracks
@@ -56,7 +52,7 @@ export default function App(props: { year: number | null, votingListName: Voting
     ));
   }
 
-  useEffect(() => { loadTracks() }, [props.year]);
+  useEffect(() => { loadTracks() }, []);
 
   return (
     <Box sx={{

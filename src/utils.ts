@@ -34,16 +34,6 @@ export function upcomingYear(date: Date) : number {
     }
 }
 
-
-/**
- * Returns true if a track is eligible for the given year of hottest 100
- */
-export function isEligible(track: Track, year: number) : boolean {
-    const date = new Date(track.album.release_date);
-    const [start, end] = eligibilityPeriod(year);
-    return date >= start && date < end;
-}
-
 export function processPage(tracks: Track[], source: Source, offset: number) : SimpleTrack[] {
     return tracks.map((track, i) => convertTrack(track, source, offset + i));
 }
