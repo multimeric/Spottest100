@@ -3,25 +3,24 @@ import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { getAllPages } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
 import { AppBar, Box, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
-import { VotingListName } from './votingList';
-import { Australian2025Countdown } from './2025Australian';
+import { Australian2025Countdown } from './countdowns/2025Australian';
+import { Countdown2024 } from './countdowns/2024';
 import { useThrottle } from "@uidotdev/usehooks";
 
 
 type Countdown = {
   name: string;
-  // year: number;
-  // hook: (tracks: SimpleTrack[]) => ([JSX.Element,SimpleTrack[]]),
   component: React.FC<{ favourites: SimpleTrack[] }>;
 }
 
 const countdowns: Record<string, Countdown> = {
   "2025-Australian": {
     name: "Hottest 100 of Australian Songs",
-    // hook: use2025Countdown,
-    // year: 2025,
-    // form: function(){},
     component: Australian2025Countdown
+  },
+  "2024": {
+    name: "Hottest 100 of 2024",
+    component: Countdown2024
   }
 }
 
