@@ -5,7 +5,7 @@ import { getAllPages, processPage } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { TrackGrid } from './trackGrid';
-import { Box, Container, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
+import { AppBar, Box, Container, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from '@mui/material';
 import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 import pLimit from 'p-limit';
 import { Australian2025Countdown, use2025Countdown } from './2025Australian';
@@ -60,16 +60,21 @@ export default function App(props: { year: number | null, votingListName: Voting
 
   return (
     <Box sx={{
-      width: '100%',
+      flexGrow: 1,
+      gap: 2,
+      display: 'flex',
+      flexDirection: 'column',
     }}>
-      <Typography variant="h3" align="center">Spottest 100</Typography>
-      <Box sx={{ maxWidth: 1000, margin: 'auto' }}>
-        <Paper>
+      <AppBar position="static">
+        <Typography variant="button" align="center">spottest 100</Typography>
+      </AppBar>
+      <Paper sx={{ maxWidth: 1000, margin: 'auto', padding: 2 }}>
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>Countdown</InputLabel>
             <Select
               value={countdownId}
               label="Time Range"
+              variant='filled'
               onChange={(e) => {
                 setCountdownId(e.target.value as CountDownId);
               }}
@@ -83,7 +88,6 @@ export default function App(props: { year: number | null, votingListName: Voting
           </FormControl>
           <CountdownComponent favourites={cachedTracks} />
         </Paper>
-      </Box>
     </Box>
   );
 }

@@ -2,7 +2,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { getAllPages, processPage } from './utils'
 import { rerankTracks, SimpleTrack, Source } from './simpleTrack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Avatar, Box, Grid, Grid2, Link, Paper } from '@mui/material';
+import { Avatar, Box, Grid, Grid2, Link, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 
 const formatSource: Record<Source, string> = {
@@ -69,12 +69,46 @@ const columns: GridColDef<SimpleTrack>[] = [
 ]
 
 export function InnerGrid(props: { tracks: SimpleTrack[] }) {
-    return <DataGrid
-        rows={props.tracks}
-        columns={columns}
-        getRowId={track => track.id}
-        disableRowSelectionOnClick
-        disableColumnSorting={true}
+    return <TableContainer component={Paper} sx={{ height: '100%' }}>
+          <TableHead>
+          <TableRow>
+            <TableCell>Rank</TableCell>
+            <TableCell>Track</TableCell>
+            <TableCell>Album</TableCell>
+            <TableCell>Artists</TableCell>
+            <TableCell>Release Date</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+            {props.tracks.map((track) => (
+                <TableRow key={track.id + track.rank}>
+                    <TableCell>{track.rank}</TableCell>
+                    <TableCell>
+                        <Link href={track.spotifyUrl} target="_blank">
+                            <Grid2 sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <Avatar src={track.thumbnail || undefined} alt={track.name} style={{ width: '52px', height: '52px' }} />
+                                {track.name}
+                            </Grid2>
+                        </Link>
+                    </TableCell>
+                    <TableCell>{track.album}</TableCell>
+                    <TableCell>{track.artists.join(', ')}</TableCell>
+                    <TableCell>{track.releaseDate.toLocaleDateString()}</TableCell>
+                </TableRow>
+            ))}
+        </TableBody>
+        </TableContainer>
+    // return <DataGrid
+    //     rows={props.tracks}
+    //     columns={columns}
+    //     getRowId={track => track.id}
+    //     disableRowSelectionOnClick
+    //     disableColumnSorting={true}
         // initialState={{
         //     pagination: {
         //         paginationModel: {
@@ -82,7 +116,7 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
         //         }
         //     }
         // }}
-    />
+    // />
 }
 
 /**
@@ -98,13 +132,7 @@ export function TrackGrid({ tracks, seen }: {
     }
     else {
         content = (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <Paper sx={{ padding: 2, textAlign: 'center' }}>
-                    <p>No tracks found</p>
-                    <p>Seen {seen} tracks</p>
                     <CircularProgress />
-                </Paper>
-            </Box>
         );
     }
 

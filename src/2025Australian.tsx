@@ -5,7 +5,7 @@ import { SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
 import { TrackGrid } from "./trackGrid";
 import { byVotingList, byArtistMaxSongs } from "./filters"
 import { useForm, SubmitHandler, Controller, Control } from "react-hook-form"
-import { FormControl, Input, InputLabel, MenuItem, Select } from "@mui/material"
+import { FormControl, Grid2, Input, InputLabel, MenuItem, Select } from "@mui/material"
 import { useDerivedState } from "./useDerived";
 
 type Inputs = {
@@ -62,10 +62,10 @@ export function Australian2025Countdown({ favourites }: {
     }
 
     return (
-        <>
+        <Grid2 container spacing={2}>
             <ArtistLimit control={control} />
             <TrackGrid tracks={filtered} seen={favourites.length} />
-        </>
+        </Grid2>
     )
 }
 
