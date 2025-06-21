@@ -1,5 +1,9 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import { SimpleTrack, Source } from "./simpleTrack"
+import CircularProgress from '@mui/material/CircularProgress';
+import { getAllPages, processPage } from './utils'
+import { SimpleTrack, Source } from './simpleTrack';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Box, Paper } from '@mui/material';
+import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 
 const formatSource: Record<Source, string> = {
     [Source.ShortTerm]: 'Short Term Favourite',
@@ -40,7 +44,7 @@ const columns: GridColDef<SimpleTrack>[] = [
     },
 ]
 
-export function TrackGrid(props: { tracks: SimpleTrack[] }) {
+export function InnerGrid(props: { tracks: SimpleTrack[] }) {
     return <DataGrid
         rows={props.tracks}
         columns={columns}
@@ -54,4 +58,30 @@ export function TrackGrid(props: { tracks: SimpleTrack[] }) {
             }
         }}
     />
+}
+
+/**
+ * Wrapper component for the TrackGrid that shows a loading spinner if no tracks are available.
+ */
+export function TrackGrid({ tracks, seen }: {
+    tracks: SimpleTrack[],
+    seen: number
+}) {
+    let content = null;
+    if (tracks.length > 0) {
+        content = <InnerGrid tracks={tracks} />;
+    }
+    else {
+        content = (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <Paper sx={{ padding: 2, textAlign: 'center' }}>
+                    <p>No tracks found</p>
+                    <p>Seen {seen} tracks</p>
+                    <CircularProgress />
+                </Paper>
+            </Box>
+        );
+    }
+
+    return content;
 }

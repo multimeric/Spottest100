@@ -1,80 +1,88 @@
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { SpotifyApi, Track } from '@spotify/web-api-ts-sdk';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAllPages, processPage } from './utils'
 import { SimpleTrack, Source } from './simpleTrack';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { TrackGrid } from './trackGrid';
-import { Box, Paper } from '@mui/material';
+import { Box, Container, FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
 import { VotingList, VotingListName, VOTING_LISTS } from './votingList';
 import pLimit from 'p-limit';
+import { Australian2025Countdown, use2025Countdown } from './2025Australian';
+import { useThrottle } from "@uidotdev/usehooks";
 
+
+type Countdown = {
+  name: string;
+  // year: number;
+  // hook: (tracks: SimpleTrack[]) => ([JSX.Element,SimpleTrack[]]),
+  component: React.FC<{ favourites: SimpleTrack[] }>;
+}
+
+const countdowns: Record<string, Countdown> = {
+  "2025-Australian": {
+    name: "Hottest 100 of Australian Songs",
+    // hook: use2025Countdown,
+    // year: 2025,
+    // form: function(){},
+    component: Australian2025Countdown
+  }
+}
+
+type CountDownId = keyof typeof countdowns;
 
 export default function App(props: { year: number | null, votingListName: VotingListName }) {
   const location = window.location;
 
   // All favourite tracks
   const [tracks, setTracks] = useState<SimpleTrack[]>([]);
-  // const [shortTerm, setShortTerm] = useState<SimpleTrack[] | null>(null);
-  // const [mediumTerm, setMediumTerm] = useState<SimpleTrack[] | null>(null);
-  // const [longTerm, setLongTerm] = useState<SimpleTrack[] | null>(null);
-  // const [libraryTracks, setLibraryTracks] = useState<SimpleTrack[] | null>(null);
-  // const [year, setYear] = useState(null);
-  const [finishedLoading, setFinishedLoading] = useState(false);
-
-  const [votingList, setVotingList] = useState<VotingList | null>(null);
-
-  // Filtered tracks based on the voting list
-  const filteredTracks = useMemo(() => {
-    if (!votingList) return [];
-    return tracks.filter(track => votingList.hasId(track.id));
-  }, [votingList, tracks, finishedLoading]);
-
-  async function loadVotingList() {
-      const res = await fetch(`${VOTING_LISTS[props.votingListName]}`);
-      const parsed = await res.json();
-      setVotingList(new VotingList(parsed));
-  }
-
-  useEffect(() => {
-    loadVotingList();
-  }, [props.votingListName])
-
+  const cachedTracks = useThrottle(tracks, 500);
+  const [countdownId, setCountdownId] = useState<CountDownId>("2025-Australian");
   const homeUrl = location.origin + location.pathname;
 
+  const CountdownComponent = countdowns[countdownId].component;
   const client = useMemo(() => SpotifyApi.withUserAuthorization(
     '9c91bacd3cc149c4ac198f88b2468719',
     homeUrl,
     ['user-top-read'],
   ), []);
-  // const client = useMemo(() => SpotifyApi.withImplicitGrant(
-  //   '9c91bacd3cc149c4ac198f88b2468719',
-  //   homeUrl,
-  //   ['user-top-read'],
-  // ), []);
 
   async function loadTracks() {
     // Get an array of promises, each running concurrently
     const pagePromises = await getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "long_term", pageSize, offset), Source.LongTerm);
     // Whenever any page is loaded, process it and add it to the tracks
-    await Promise.all(pagePromises.map(promise => promise.then(newTracks => setTracks(tracks => [...tracks, ...newTracks]))));
+    pagePromises.map(promise => promise.then(
+      newTracks => setTracks(tracks => [...tracks, ...newTracks])
+    ));
   }
 
   useEffect(() => { loadTracks() }, [props.year]);
 
-  let content = null;
-  if (tracks.length > 0) {
-    content = <TrackGrid tracks={filteredTracks} />;
-  }
-  else {
-    content = <CircularProgress />;
-  }
-
   return (
-    <Box sx={{ maxWidth: 1000, margin: 'auto' }}>
+    <Box sx={{
+      width: '100%',
+    }}>
+      <Box sx={{ maxWidth: 1000, margin: 'auto' }}>
         <Paper>
-          {content}
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Countdown</InputLabel>
+            <Select
+              value={countdownId}
+              label="Time Range"
+              onChange={(e) => {
+                setCountdownId(e.target.value as CountDownId);
+              }}
+            >
+              {Object.entries(countdowns).map(([id, countdown]) => (
+                <MenuItem key={id} value={id}>
+                  {countdown.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <CountdownComponent favourites={cachedTracks} />
         </Paper>
+      </Box>
     </Box>
-  )
+  );
 }

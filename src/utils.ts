@@ -44,8 +44,8 @@ export function isEligible(track: Track, year: number) : boolean {
     return date >= start && date < end;
 }
 
-export function processPage(tracks: Track[], source: Source) : SimpleTrack[] {
-    return tracks.map(track => convertTrack(track, source));
+export function processPage(tracks: Track[], source: Source, offset: number) : SimpleTrack[] {
+    return tracks.map((track, i) => convertTrack(track, source, offset + i));
 }
 
 
@@ -61,10 +61,10 @@ export async function getAllPages(pager: ((offset: number, pageSize: MaxInt<50>)
 
     // Wait for the first page, since we need to know the total number of items
     const firstPage = await pager(0, pageSize);
-    const promises: Promise<SimpleTrack[]>[] = [Promise.resolve(processPage(firstPage.items, source))];
+    const promises: Promise<SimpleTrack[]>[] = [Promise.resolve(processPage(firstPage.items, source, 0))];
 
     for (let i = pageSize; i < firstPage.total; i += pageSize) {
-        promises.push(concurrencyLimiter(() => pager(i, pageSize).then(page => processPage(page.items, source))));
+        promises.push(concurrencyLimiter(() => pager(i, pageSize).then(page => processPage(page.items, source, i))));
     }
     return promises;
 }

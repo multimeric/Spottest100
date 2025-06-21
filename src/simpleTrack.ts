@@ -11,6 +11,7 @@ export enum Source {
  * A stripped-down version of Spotify's Track object to reduce the memory footprint
  */
 export interface SimpleTrack {
+    rank: number;
     id: string;
     name: string;
     album: string;
@@ -20,8 +21,9 @@ export interface SimpleTrack {
     spotifyUrl: string;
 }
 
-export function convertTrack(track: Track, source: Source): SimpleTrack {
+export function convertTrack(track: Track, source: Source, rank: number): SimpleTrack {
     return {
+        rank: rank,
         id: track.id,
         name: track.name,
         album: track.album.name,
