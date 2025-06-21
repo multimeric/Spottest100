@@ -3,7 +3,7 @@ import { useVotingList } from "../votingList";
 import { TrackGrid } from "../trackGrid";
 import { byVotingList, byArtistMaxSongs, byYear } from "../filters"
 import { Controller, useForm } from "react-hook-form"
-import { Checkbox, FormControlLabel, Grid2, Stack, Switch, Typography } from "@mui/material"
+import { Checkbox, FormControl, FormControlLabel, FormLabel, Grid2, InputLabel, OutlinedInput, Stack, Switch, TextField, Typography } from "@mui/material"
 import { ArtistLimit } from "../artistLimit";
 
 type Inputs = {
@@ -23,7 +23,7 @@ export function Countdown2024({ favourites }: {
     let filtered: SimpleTrack[] = favourites;
 
     // Successively apply filters based on the user's selection
-    if(votingListFilter){
+    if (votingListFilter) {
         if (votingList)
             filtered = byVotingList(filtered, votingList);
         else
@@ -39,17 +39,26 @@ export function Countdown2024({ favourites }: {
     return (
         <Grid2 container spacing={2}>
             <ArtistLimit control={control} />
-            <Stack direction="row" spacing={2} alignItems="center">
-            <Typography>Release Year</Typography>
-            <FormControlLabel control={<Controller
-                name="votingListFilter"
-                control={control}
-                render={() => <Switch/>}
-                />
-            } label="Eligibility" />
-            <Typography>Voting List</Typography>
-            </Stack>
-            <TrackGrid tracks={filtered}/>
+            <TextField
+                variant="outlined"
+                label="Eligibility"
+                multiline
+                slotProps={{
+                    inputLabel: { shrink: true },
+                    input: {
+                        inputComponent: () => <Stack direction="row" spacing={2} alignItems="center" sx={{ padding: '8px' }}>
+                            <Typography>Release Year</Typography>
+                            <Controller
+                                name="votingListFilter"
+                                control={control}
+                                render={({ field }) => <Switch {...field} />}
+                            />
+                            <Typography>Voting List</Typography>
+                        </Stack>
+                    }
+                }}
+            />
+            <TrackGrid tracks={filtered} />
         </Grid2>
     )
 }

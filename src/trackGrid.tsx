@@ -1,6 +1,8 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import { rerankTracks, SimpleTrack, Source } from './simpleTrack';
 import { Avatar, Grid2, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import InfiniteScroll from 'react-infinite-scroller';
+import { useState } from 'react';
 
 const formatSource: Record<Source, string> = {
     [Source.ShortTerm]: 'Short Term Favourite',
@@ -10,42 +12,49 @@ const formatSource: Record<Source, string> = {
 };
 
 export function InnerGrid(props: { tracks: SimpleTrack[] }) {
-    return <TableContainer component={Paper} sx={{ height: '100%' }}>
-        <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Rank</TableCell>
-                    <TableCell>Track</TableCell>
-                    <TableCell>Album</TableCell>
-                    <TableCell>Artists</TableCell>
-                    <TableCell>Release Date</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {props.tracks.map((track) => (
-                    <TableRow key={track.id + track.rank}>
-                        <TableCell>{track.rank}</TableCell>
-                        <TableCell>
-                            <Link href={track.spotifyUrl} target="_blank">
-                                <Grid2 sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                }}>
-                                    <Avatar src={track.thumbnail || undefined} alt={track.name} style={{ width: '52px', height: '52px' }} />
-                                    {track.name}
-                                </Grid2>
-                            </Link>
-                        </TableCell>
-                        <TableCell>{track.album}</TableCell>
-                        <TableCell>{track.artists.join(', ')}</TableCell>
-                        <TableCell>{track.releaseDate.toLocaleDateString()}</TableCell>
+    const [limit, setLimit] = useState(50);
+    return <InfiniteScroll
+        pageStart={0}
+        loadMore={() => { setLimit(limit => limit + 50) }}
+        hasMore={limit < props.tracks.length}
+    >
+        <TableContainer component={Paper} sx={{ height: '100%' }}>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Rank</TableCell>
+                        <TableCell>Track</TableCell>
+                        <TableCell>Album</TableCell>
+                        <TableCell>Artists</TableCell>
+                        <TableCell>Release Date</TableCell>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    </TableContainer>
+                </TableHead>
+                <TableBody>
+                    {props.tracks.slice(0, limit).map((track) => (
+                        <TableRow key={track.id + track.rank}>
+                            <TableCell>{track.rank}</TableCell>
+                            <TableCell>
+                                <Link href={track.spotifyUrl} target="_blank">
+                                    <Grid2 sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                    }}>
+                                        <Avatar src={track.thumbnail || undefined} alt={track.name} style={{ width: '52px', height: '52px' }} />
+                                        {track.name}
+                                    </Grid2>
+                                </Link>
+                            </TableCell>
+                            <TableCell>{track.album}</TableCell>
+                            <TableCell>{track.artists.join(', ')}</TableCell>
+                            <TableCell>{track.releaseDate.toLocaleDateString()}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    </InfiniteScroll>
 }
 
 /**
@@ -53,17 +62,9 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
  */
 export function TrackGrid({ tracks }: {
     tracks: SimpleTrack[],
-    seen: number
 }) {
-    let content = null;
-    if (tracks.length > 0) {
-        content = <InnerGrid tracks={rerankTracks(tracks)} />;
-    }
-    else {
-        content = (
-            <CircularProgress />
-        );
-    }
-
-    return content;
+    if (tracks.length > 0)
+        return <InnerGrid tracks={rerankTracks(tracks)} />;
+    else
+        return <CircularProgress />
 }
