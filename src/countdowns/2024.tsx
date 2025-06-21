@@ -51,7 +51,7 @@ export function Countdown2024({ favourites }: {
                             <Controller
                                 name="votingListFilter"
                                 control={control}
-                                render={({ field }) => <Switch {...field} />}
+                                render={({ field }) => <Switch checked={field.value} onChange={field.onChange} onBlur={field.onBlur} name={field.name} inputRef={field.ref} />}
                             />
                             <Typography>Voting List</Typography>
                         </Stack>

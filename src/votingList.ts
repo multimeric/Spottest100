@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 export interface VotingListTrack {
     title: string;
-    artist_name: string;
-    spotify_track_id: string;
+    artist: string;
+    id: string;
 }
 
 export function useVotingList(url: string) {
@@ -26,7 +26,7 @@ export class VotingList {
 
     constructor(tracks: VotingListTrack[]) {
         this.tracks = tracks;
-        this.spotifyIds = new Set(tracks.map(track => track.spotify_track_id));
+        this.spotifyIds = new Set(tracks.map(track => track.id));
     }
 
     hasId(id: string): boolean {

@@ -7,7 +7,7 @@ for await (const chunk of process.stdin) {
 
 const parsed = JSON.parse(chunks.join(""));
 const simplified: VotingListTrack[] = Object.values(parsed).map(track => ({
-    track: track.spotify_track_id,
+    id: track.spotify_track_id,
     title: track.title,
     artist: track.artists.map(artist => artist.title).join(", "),
 }));

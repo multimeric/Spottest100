@@ -26,7 +26,7 @@ export function Australian2025Countdown({ favourites }: {
     return (
         <Grid2 container spacing={2}>
             <ArtistLimit control={control} />
-            <TrackGrid tracks={filtered} seen={favourites.length} />
+            <TrackGrid tracks={filtered}/>
         </Grid2>
     )
 }
