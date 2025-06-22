@@ -1,15 +1,8 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import { rerankTracks, SimpleTrack, Source } from './simpleTrack';
+import { rerankTracks, SimpleTrack } from './simpleTrack';
 import { Avatar, Grid2, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useState } from 'react';
-
-const formatSource: Record<Source, string> = {
-    [Source.ShortTerm]: 'Short Term Favourite',
-    [Source.MediumTerm]: 'Medium Term Favourite',
-    [Source.LongTerm]: 'Long Term Favourite',
-    [Source.Library]: 'Saved Track'
-};
 
 export function InnerGrid(props: { tracks: SimpleTrack[] }) {
     const [limit, setLimit] = useState(50);

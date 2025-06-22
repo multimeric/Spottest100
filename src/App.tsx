@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
-import { getAllPages } from './utils'
+import { getAllPages } from './spotify'
 import { SimpleTrack, Source } from './simpleTrack';
 import { AppBar, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import { Australian2025Countdown } from './countdowns/2025Australian';
@@ -47,12 +47,11 @@ export default function App() {
   ), []);
 
   async function loadTracks() {
-    // Get an array of promises, each running concurrently
-    const pagePromises = await getAllPages((offset, pageSize) => client.currentUser.topItems('tracks', "long_term", pageSize, offset), Source.LongTerm);
-    // Whenever any page is loaded, process it and add it to the tracks
-    pagePromises.map(promise => promise.then(
-      newTracks => setTracks(tracks => [...tracks, ...newTracks])
-    ));
+    await getAllPages(
+      (offset, pageSize) => client.currentUser.topItems('tracks', 'long_term', pageSize, offset),
+      newTracks => setTracks(tracks => [...tracks, ...newTracks]),
+      Source.LongTerm
+    );
   }
 
   useEffect(() => { loadTracks() }, []);

@@ -3,7 +3,7 @@ import { useVotingList } from "../votingList";
 import { TrackGrid } from "../trackGrid";
 import { byVotingList, byArtistMaxSongs, byYear } from "../filters"
 import { Controller, useForm } from "react-hook-form"
-import { Checkbox, FormControl, FormControlLabel, FormLabel, Grid2, InputLabel, OutlinedInput, Stack, Switch, TextField, Typography } from "@mui/material"
+import { Grid2, Stack, Switch, TextField, Typography } from "@mui/material"
 import { ArtistLimit } from "../artistLimit";
 
 type Inputs = {
