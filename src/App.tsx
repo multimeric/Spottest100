@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
-import { getAllPages } from './spotify'
+import { getAllPages, responseValidator } from './spotify'
 import { SimpleTrack, Source } from './simpleTrack';
 import { AppBar, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import { Australian2025Countdown } from './countdowns/2025Australian';
@@ -44,6 +44,7 @@ export default function App() {
     '9c91bacd3cc149c4ac198f88b2468719',
     homeUrl,
     ['user-top-read'],
+    { responseValidator }
   ), []);
 
   async function loadTracks() {
