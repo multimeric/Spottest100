@@ -1,14 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
-import { getAllPages, Pager, responseValidator, usePager } from './spotify'
-import { SimpleTrack, Source } from './simpleTrack';
-import { AppBar, Box, Button, CircularProgress, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
-import { Australian2025Countdown } from './countdowns/2025Australian';
-import { Countdown2024 } from './countdowns/2024';
-import { usePrevious, useThrottle, useVisibilityChange, useWindowScroll } from "@uidotdev/usehooks";
+import { Pager, responseValidator, usePager } from './spotify'
+import { SimpleTrack } from './simpleTrack';
+import { AppBar, Box, Button, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import About from './about';
-// import InfiniteScroll from 'react-infinite-scroller';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { TrackGrid } from './trackGrid';
 import { ArtistLimit } from './artistLimit';
 import { FieldValues, useForm, UseFormProps, UseFormReturn } from 'react-hook-form';
@@ -76,7 +71,7 @@ export default function App() {
   const pager = useRef<Pager>(
     (offset, pageSize) => client.current.currentUser.topItems('tracks', 'long_term', pageSize, offset),
   );
-  const [tracks, loadMore, hasMore] = usePager(pager.current, 500);
+  const [tracks, loadMore, hasMore] = usePager(pager.current);
   const form = useForm(countdown.formProps);
   const settings = form.watch();
   const votingList = useVotingList(countdown.votingListUrl);

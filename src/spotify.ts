@@ -23,14 +23,6 @@ async function requestPage(pager: Pager, offset: number, source: Source, pageSiz
             await new Promise(r => setTimeout(r, 2000));
             queue.start();
             return queue.add(() => requestPage(pager, offset, source, pageSize, queue), { throwOnTimeout: true });
-            console.warn("Rate limit exceeded. Pausing...");
-            queue.pause();
-            // Retry on rate limit errors
-            queue.add(() => requestPage(pager, offset, source, pageSize, queue));
-            // But wait a bit before retrying
-            await new Promise(r => setTimeout(r, 2000));
-            queue.start();
-            console.warn("Resumed");
         }
         throw error;
     }
@@ -82,24 +74,16 @@ export function useQueue(concurrencyLimit: number = 5) {
 
 export function usePager(
     pager: Pager | null,
-    initialLimit: number = 100,
     source: Source = Source.LongTerm,
     pageSize: MaxInt<50> = 50,
     concurrencyLimit: number = 5,
 ): [SimpleTrack[], (pages: number) => Promise<SimpleTrack[]>, boolean] {
-    // Current track limit, to avoid requesting too many items at once
-    // const [limit, setLimit] = useState(initialLimit);
-    // const limit = useThrottle(_limit, 500);
-    // Number of tracks requested so far
-    // We start at one page not 0 because we need to request the first page to know the total number of items
-    // const [maxRequested, setMaxRequested] = useState<number>(pageSize);
     const maxRequested = useRef<number>(0);
     // Total number of tracks available
     const [total, setTotal] = useState(Infinity);
     // Sparse array of all tracks we have
     const [tracks, setTracks] = useState<SimpleTrack[]>([]);
     // A throttled version of the tracks to avoid re-rendering too often
-    const cachedTracks = useThrottle(tracks, 500);
     const queue = useRef(new PQueue({ concurrency: concurrencyLimit }));
 
     // We need to request the first page to know the total number of items
@@ -113,20 +97,6 @@ export function usePager(
         maxRequested.current += pageSize;
     }
     useEffect(() => { getFirstPage() }, [])
-
-    // // As soon as we know the total number of items, we request the rest of the pages using the queue
-    // useEffect(() => {
-    //     if (!pager) return;
-    //     if (total === 0) return;
-
-    //     for (let i = maxRequested; i < Math.min(total, limit); i += pageSize) {
-    //         queue.current.add(async () => {
-    //             const page = await requestPage(pager, i, source, pageSize, queue.current)
-    //             setTracks(tracks => [...tracks, ...page]);
-    //         });
-    //     }
-    // }, [pager, source, total, pageSize]);
-
 
     /**
      * Splice new tracks into the existing tracks array at the specified index.
@@ -189,5 +159,4 @@ export function usePager(
     })
 
     return [denseTracks, throttle(loadMorePages), maxRequested.current < total];
-
 }

@@ -13,29 +13,6 @@ function eligibilityPeriod(year: number): [Date, Date] {
 }
 
 /**
- * Calculates the next Hottest 100 year based on the date
- */
-function upcomingYear(date: Date): number {
-    const votingCloses = new Date(
-        date.getFullYear(),
-        0,
-        28,
-        3,
-    );
-
-    if (date < votingCloses) {
-        // If we're before the Hottest 100 date, the current year is the upcoming year
-        return date.getFullYear() - 1;
-    }
-    else {
-        // If we're after the Hottest 100 date, next year is the upcoming year
-        return date.getFullYear();
-    }
-}
-
-
-
-/**
  * Filters tracks by year, returning only those tracks eligible for the given year.
  * @param year The year to filter tracks by.
  */
