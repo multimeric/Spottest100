@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { Pager, responseValidator, usePager } from './spotify'
-import { SimpleTrack } from './simpleTrack';
+import { rerankTracks, SimpleTrack } from './simpleTrack';
 import { AppBar, Box, Button, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import About from './about';
 import { TrackGrid } from './trackGrid';
@@ -141,7 +141,7 @@ export default function App() {
         </FormControl>
         <Grid2 container spacing={2}>
           <countdown.settings form={form} />
-          <TrackGrid key={1} tracks={filteredTracks} />
+          <TrackGrid key={1} tracks={rerankTracks(filteredTracks)} />
         </Grid2>
       </Paper>
     </Box>
