@@ -16,7 +16,7 @@ abstract class Countdown<T extends FieldValues> {
     public readonly votingListUrl: string
   ) { }
   abstract settings(props: SettingsProps<T>): React.ReactElement;
-  filter(tracks: SimpleTrack[], settings: T, votingList: VotingList | null): SimpleTrack[] {
+  filter(tracks: SimpleTrack[], _settings: T, votingList: VotingList | null): SimpleTrack[] {
     return byVotingList(tracks, votingList)
   }
 
