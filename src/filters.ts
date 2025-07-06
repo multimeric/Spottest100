@@ -50,7 +50,11 @@ export function byYear(tracks: SimpleTrack[], year: number): SimpleTrack[] {
 /**
  * Filters tracks by a voting list, returning only those tracks that are in the voting list.
  */
-export function byVotingList(tracks: SimpleTrack[], votingList: VotingList): SimpleTrack[] {
+export function byVotingList(tracks: SimpleTrack[], votingList: VotingList | null): SimpleTrack[] {
+    if (!votingList) {
+        // If no voting list is provided, return all tracks
+        return tracks;
+    }
     return tracks.filter(track => votingList.hasId(track.id));
 }
 

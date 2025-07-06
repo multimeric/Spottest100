@@ -6,12 +6,13 @@ import { useState } from 'react';
 
 export function InnerGrid(props: { tracks: SimpleTrack[] }) {
     const [limit, setLimit] = useState(50);
-    return <InfiniteScroll
-        pageStart={0}
-        loadMore={() => { setLimit(limit => limit + 50) }}
-        hasMore={limit < props.tracks.length}
-    >
-        <TableContainer component={Paper} sx={{ height: '100%' }}>
+
+    // <InfiniteScroll
+    //     pageStart={0}
+    //     loadMore={() => { setLimit(limit => limit + 50) }}
+    //     hasMore={limit < props.tracks.length}
+    // >
+    return <TableContainer component={Paper} sx={{ height: '100%' }}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -23,7 +24,7 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.tracks.slice(0, limit).map((track) => (
+                    {props.tracks.map((track) => (
                         <TableRow key={track.id + track.rank}>
                             <TableCell>{track.rank}</TableCell>
                             <TableCell>
@@ -47,7 +48,6 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
                 </TableBody>
             </Table>
         </TableContainer>
-    </InfiniteScroll>
 }
 
 /**
@@ -56,8 +56,5 @@ export function InnerGrid(props: { tracks: SimpleTrack[] }) {
 export function TrackGrid({ tracks }: {
     tracks: SimpleTrack[],
 }) {
-    if (tracks.length > 0)
-        return <InnerGrid tracks={rerankTracks(tracks)} />;
-    else
-        return <CircularProgress />
+    return <InnerGrid tracks={rerankTracks(tracks)} />;
 }
