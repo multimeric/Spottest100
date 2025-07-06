@@ -15,9 +15,6 @@ abstract class Countdown<T extends FieldValues> {
     public readonly formProps: UseFormProps<T>,
     public readonly votingListUrl: string
   ) { }
-  // name: string;
-  // formProps: UseFormProps
-  // votingListUrl: string;
   abstract settings(props: SettingsProps<T>): React.ReactElement;
   filter(tracks: SimpleTrack[], settings: T, votingList: VotingList | null): SimpleTrack[] {
     return byVotingList(tracks, votingList)
@@ -102,5 +99,3 @@ export const countdowns: Record<string, Countdown<any>> = {
   "2025-Australian": new Countdown2025Australian(),
   "2024": new Countdown2024()
 }
-
-type CountDownId = keyof typeof countdowns;

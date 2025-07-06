@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { Pager, responseValidator, usePager } from './spotify'
-import { rerankTracks, SimpleTrack } from './simpleTrack';
+import { rerankTracks } from './simpleTrack';
 import { AppBar, Box, Button, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import About from './about';
 import { TrackGrid } from './trackGrid';
-import { FieldValues, useForm, UseFormProps, UseFormReturn } from 'react-hook-form';
-import { byArtistMaxSongs, byVotingList } from './filters';
-import { useVotingList, VotingList } from './votingList';
+import { useForm } from 'react-hook-form';
+import { useVotingList } from './votingList';
 import { useInfiniteScroll } from './useInfiniteScroll';
 import { countdowns } from './countdown';
 
