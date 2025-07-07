@@ -9,9 +9,15 @@ type SettingsProps<T extends FieldValues> = {
   form: UseFormReturn<T>
 }
 
+/**
+ * Base class for countdowns
+ * Each subclass relates to a specific countdown, e.g. Hottest 100 of 2024
+ */
 abstract class Countdown<T extends FieldValues> {
   constructor(
+    // Human-readable name of the countdown
     public readonly name: string,
+    // Form properties, typically default values
     public readonly formProps: UseFormProps<T>,
     public readonly votingListUrl: string
   ) { }
