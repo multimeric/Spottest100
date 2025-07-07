@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import { Pager, responseValidator, usePager } from './spotify'
 import { rerankTracks } from './simpleTrack';
-import { AppBar, Box, Button, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, CircularProgress, FormControl, Grid2, InputLabel, MenuItem, Paper, Select, Toolbar, Typography } from '@mui/material';
 import About from './about';
 import { TrackGrid } from './trackGrid';
 import { useForm } from 'react-hook-form';
@@ -29,7 +29,7 @@ export default function App() {
   const pager = useRef<Pager>(
     (offset, pageSize) => client.current.currentUser.topItems('tracks', 'long_term', pageSize, offset),
   );
-  const [tracks, loadMore, hasMore] = usePager(pager.current);
+  const [tracks, loadMore, hasMore, isLoading] = usePager(pager.current);
   const form = useForm(countdown.formProps);
   const settings = form.watch();
   const votingList = useVotingList(countdown.votingListUrl);
@@ -102,6 +102,7 @@ export default function App() {
         <Grid2 container spacing={2}>
           <countdown.settings form={form} />
           <TrackGrid key={1} tracks={rerankTracks(filteredTracks)} />
+          { isLoading && <Grid2 container size="grow" justifyContent={"center"} direction={"column"} alignItems={'center'}><CircularProgress/></Grid2>}
         </Grid2>
       </Paper>
     </Box>

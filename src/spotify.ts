@@ -72,12 +72,25 @@ export function useQueue(concurrencyLimit: number = 5) {
     return [queue.current, pause];
 }
 
+/**
+ * 
+ * Hook to manage pagination of Spotify tracks.
+ * @param pager Function to retrieve a page of items
+ * @param source Source of the tracks, e.g. LongTerm, ShortTerm, etc
+ * @param pageSize Number of items per page, defaults to 50
+ * @param concurrencyLimit Maximum number of concurrent requests to the pager function, defaults to 5
+ * @returns A tuple containing:
+ * - tracks: An array of SimpleTrack objects representing the tracks
+ * - loadMore: A function to load more pages, which returns a promise that resolves to the new tracks
+ * - hasMore: A boolean indicating if there are more tracks to load
+ * - isLoading: A boolean indicating if the queue is currently processing or has items
+*/
 export function usePager(
     pager: Pager | null,
     source: Source = Source.LongTerm,
     pageSize: MaxInt<50> = 50,
     concurrencyLimit: number = 5,
-): [SimpleTrack[], (pages: number) => Promise<SimpleTrack[]>, boolean] {
+): [SimpleTrack[], (pages: number) => Promise<SimpleTrack[]>, boolean, boolean] {
     const maxRequested = useRef<number>(0);
     // Total number of tracks available
     const [total, setTotal] = useState(Infinity);
@@ -85,6 +98,17 @@ export function usePager(
     const [tracks, setTracks] = useState<SimpleTrack[]>([]);
     // A throttled version of the tracks to avoid re-rendering too often
     const queue = useRef(new PQueue({ concurrency: concurrencyLimit }));
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Update the loading state when the queue changes
+    useEffect(() => {
+        queue.current.on("add", ()=> {
+            setIsLoading(true);
+        })
+        queue.current.on("idle", () => {
+            setIsLoading(false);
+        })
+    })
 
     // We need to request the first page to know the total number of items
     async function getFirstPage() {
@@ -154,9 +178,9 @@ export function usePager(
     const denseTracks = tracks.filter(track => track !== undefined);
 
     const throttle = pThrottle({
-        interval: 1000,
-        limit: 1
+        interval: 2000,
+        limit: 4
     })
 
-    return [denseTracks, throttle(loadMorePages), maxRequested.current < total];
+    return [denseTracks, throttle(loadMorePages), maxRequested.current < total, isLoading];
 }
