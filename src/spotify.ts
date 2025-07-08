@@ -60,7 +60,7 @@ export class SpotifyApiError extends Error {
 
 export const responseValidator: IValidateResponses = {
     validateResponse: async response => {
-        if (response.status != 200) {
+        if (!response.status.toString().startsWith("20")) {
             throw new SpotifyApiError(response.statusText, response.status);
         }
     }
@@ -140,6 +140,9 @@ export function usePager(
      * @returns A promise that resolves to the new tracks loaded.
      */
     async function loadMorePages(pages: number): Promise<SimpleTrack[]> {
+        // See https://github.com/spotify/spotify-web-api-ts-sdk/issues/125
+        // We need to ensure the first page is loaded before we can load more pages
+        if (maxRequested.current === 0) return [];
         if (!pager) return [];
         if (queue.current.pending > 0 || queue.current.size > 0){
             // If the queue is already processing or has items, we don't need to load more pages
