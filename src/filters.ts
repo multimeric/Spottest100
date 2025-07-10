@@ -1,6 +1,16 @@
 import { SimpleTrack } from "./simpleTrack";
-import { eligibilityPeriod } from "./utils";
 import { VotingList } from "./votingList";
+
+/**
+ * Gets the start (inclusive) and end (exclusive) dates for eligible songs in that year. e.g. for 2019 this would be
+ * 1 December 2018 and 30 November 2019
+ */
+function eligibilityPeriod(year: number): [Date, Date] {
+    return [
+        new Date(year - 1, 11, 1), // December of the previous year
+        new Date(year, 11, 1), // December of the current year is too late
+    ];
+}
 
 /**
  * Filters tracks by year, returning only those tracks eligible for the given year.
@@ -17,7 +27,11 @@ export function byYear(tracks: SimpleTrack[], year: number): SimpleTrack[] {
 /**
  * Filters tracks by a voting list, returning only those tracks that are in the voting list.
  */
-export function byVotingList(tracks: SimpleTrack[], votingList: VotingList): SimpleTrack[] {
+export function byVotingList(tracks: SimpleTrack[], votingList: VotingList | null): SimpleTrack[] {
+    if (!votingList) {
+        // If no voting list is provided, return all tracks
+        return tracks;
+    }
     return tracks.filter(track => votingList.hasId(track.id));
 }
 
