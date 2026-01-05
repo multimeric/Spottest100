@@ -53,16 +53,22 @@ export class Countdown2025Australian extends Countdown<Settings2025Australian> {
   }
 }
 
-type Settings2024 = {
+type RegularSettings = {
   limitPerArtist: number
   useVotingList: boolean
 }
 
-export class Countdown2024 extends Countdown<Settings2024> {
-  constructor() {
-    super("Hottest 100 of 2024", {
+/**
+ * e.g. Hottest 100 of 2024, 2025
+ */
+export class RegularCountdown extends Countdown<RegularSettings> {
+  year: number;
+
+  constructor(year: number) {
+    super(`Hottest 100 of ${year}`, {
       defaultValues: { limitPerArtist: Infinity, useVotingList: true }
-    }, "2024.json");
+    }, `${year}.json`);
+    this.year = year;
   }
 
   settings({ form }: SettingsProps<any>): React.ReactElement {
@@ -90,12 +96,12 @@ export class Countdown2024 extends Countdown<Settings2024> {
     </>
   }
 
-  filter(tracks: SimpleTrack[], settings: Settings2024, votingList: VotingList | null): SimpleTrack[] {
+  filter(tracks: SimpleTrack[], settings: RegularSettings, votingList: VotingList | null): SimpleTrack[] {
     // Toggle between filtering by voting list or by year based on user settings
     if (settings.useVotingList) {
       tracks = byVotingList(tracks, votingList);
     } else {
-      tracks = byYear(tracks, 2024);
+      tracks = byYear(tracks, this.year);
     }
     return byArtistMaxSongs(tracks, settings.limitPerArtist);
   }
@@ -103,5 +109,6 @@ export class Countdown2024 extends Countdown<Settings2024> {
 
 export const countdowns: Record<string, Countdown<any>> = {
   "2025-Australian": new Countdown2025Australian(),
-  "2024": new Countdown2024()
+  "2024": new RegularCountdown(2024),
+  "2025": new RegularCountdown(2025),
 }
